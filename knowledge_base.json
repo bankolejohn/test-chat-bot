@@ -1,0 +1,63 @@
+{
+  "3mtt_program": {
+    "overview": "3MTT (3 Million Technical Talent) is Nigeria's flagship skills development program aimed at building technical talent across the country.",
+    "duration": "The program runs for 12 months with different phases",
+    "cohorts": {
+      "cohort_3": {
+        "start_date": "2024-01-15",
+        "end_date": "2024-07-20",
+        "status": "active"
+      }
+    },
+    "training_format": "Hybrid - combines online learning through Darey.io platform with in-person sessions"
+  },
+  "courses": {
+    "available_tracks": [
+      "Software Development",
+      "Data Science & Analytics", 
+      "Cybersecurity",
+      "Digital Marketing",
+      "UI/UX Design",
+      "Cloud Computing",
+      "DevOps Engineering",
+      "Product Management"
+    ],
+    "course_change_policy": "Course changes are allowed before admission to the Learning Management System (LMS). Once admitted to LMS, course changes are not permitted.",
+    "location_change_policy": "Location changes are allowed at any time during Cohort 3."
+  },
+  "platform": {
+    "learning_platform": "Darey.io",
+    "dashboard_sync": "Dashboard scores sync gradually with Darey.io. There may be delays in score synchronization.",
+    "portal_access": "3MTT portal provides access to community information, learning resources, and progress tracking"
+  },
+  "assessments": {
+    "entry_assessment": {
+      "required": true,
+      "purpose": "Determines skill benchmark and helps select the most suitable course for fellows",
+      "timing": "Before program commencement"
+    },
+    "ongoing_assessments": "Regular assessments throughout the program to track progress"
+  },
+  "support": {
+    "financial_support": "Program covers training costs only. Participants are responsible for transportation, meals, and other personal expenses.",
+    "learning_communities": "Fellows are assigned to location-based learning communities for peer collaboration and meetups",
+    "office_hours": "Monday-Friday 9AM-6PM WAT (West Africa Time)",
+    "contact_methods": ["Email support", "Portal messaging", "Community forums"]
+  },
+  "onboarding": {
+    "waiting_period": "During onboarding wait, fellows get access to free resources, collaborative self-paced learning, and information about physical meetups",
+    "community_assignment": "Community information appears on the community page within the 3MTT portal after assignment"
+  },
+  "technical_requirements": {
+    "internet_access": "Stable internet connection required for online components",
+    "device_requirements": "Computer/laptop with modern web browser",
+    "software_tools": "Specific tools vary by track and will be communicated during onboarding"
+  },
+  "faq": {
+    "common_issues": {
+      "dashboard_sync": "Dashboard scores may take time to sync with Darey.io platform. This is normal and scores will update automatically.",
+      "community_access": "Community information becomes available on your portal dashboard once you're assigned to a learning community.",
+      "course_selection": "Carefully consider your course choice as changes are only allowed before LMS admission."
+    }
+  }
+}
