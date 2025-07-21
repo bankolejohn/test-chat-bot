@@ -26,31 +26,59 @@ MOCK_RESPONSES = {
     "default": "Hello! Welcome to 3MTT support. How can I help you today? You can ask about dashboard scores, program timeline, course changes, assessments, or general support."
 }
 
+def load_knowledge_base():
+    """Load knowledge base from JSON file"""
+    try:
+        with open('knowledge_base.json', 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        print("Knowledge base file not found. Using basic knowledge.")
+        return {}
+
+def search_knowledge_base(query, knowledge_base):
+    """Search knowledge base for relevant information"""
+    query_lower = query.lower()
+    relevant_info = []
+    
+    # Search through different sections
+    for section, content in knowledge_base.items():
+        if isinstance(content, dict):
+            for key, value in content.items():
+                if any(word in key.lower() or (isinstance(value, str) and word in value.lower()) 
+                       for word in query_lower.split()):
+                    relevant_info.append(f"{section}.{key}: {value}")
+    
+    return relevant_info[:3]  # Return top 3 relevant pieces
+
 def get_ai_response(message, conversation_history=None):
-    """Get response from OpenAI API with conversation context"""
+    """Get response from OpenAI API with knowledge base context"""
     try:
         import openai
         api_key = os.getenv('OPENAI_API_KEY')
         if not api_key:
-            return get_mock_response(message)
+            print("No OpenAI API key found. Using enhanced mock responses.")
+            return get_enhanced_mock_response(message)
         
         client = openai.OpenAI(api_key=api_key)
         
-        # Build conversation context
-        messages = [
-            {"role": "system", "content": """You are a helpful customer support assistant for 3MTT (3 Million Technical Talent) organization. 
-            
-            Key information about 3MTT:
-            - It's a skills development program
-            - Uses Darey.io platform for learning
-            - Has dashboard score syncing
-            - Cohort 3 ends July 20th
-            - Hybrid training (online + in-person)
-            - Entry assessments determine skill levels
-            - Course changes allowed before LMS admission
-            
-            Keep responses concise, professional, and helpful. If you don't know something specific about 3MTT, acknowledge it and offer to connect them with support."""}
-        ]
+        # Load knowledge base
+        knowledge_base = load_knowledge_base()
+        relevant_info = search_knowledge_base(message, knowledge_base)
+        
+        # Build enhanced system prompt with knowledge base
+        system_content = """You are an expert customer support assistant for 3MTT (3 Million Technical Talent) organization.
+
+KNOWLEDGE BASE CONTEXT:
+""" + "\n".join(relevant_info) + """
+
+INSTRUCTIONS:
+- Use the knowledge base information above to provide accurate, specific answers
+- If the knowledge base doesn't contain the answer, acknowledge this and offer to connect them with support
+- Keep responses helpful, professional, and concise
+- Always prioritize information from the knowledge base over general assumptions
+- If asked about technical issues, provide step-by-step guidance when possible"""
+
+        messages = [{"role": "system", "content": system_content}]
         
         # Add recent conversation history for context
         if conversation_history:
@@ -63,12 +91,28 @@ def get_ai_response(message, conversation_history=None):
         response = client.chat.completions.create(
             model=os.getenv('AI_MODEL', 'gpt-4'),
             messages=messages,
-            max_tokens=int(os.getenv('MAX_TOKENS', '200')),
+            max_tokens=int(os.getenv('MAX_TOKENS', '300')),
             temperature=float(os.getenv('TEMPERATURE', '0.7'))
         )
         return response.choices[0].message.content
     except Exception as e:
         print(f"AI Error: {e}")
+        return get_enhanced_mock_response(message)
+
+def get_enhanced_mock_response(message):
+    """Enhanced mock response using knowledge base"""
+    knowledge_base = load_knowledge_base()
+    relevant_info = search_knowledge_base(message, knowledge_base)
+    
+    if relevant_info:
+        # Use knowledge base information
+        response = "Based on our knowledge base:\n\n"
+        for info in relevant_info:
+            response += f"• {info}\n"
+        response += "\nIs there anything specific you'd like to know more about?"
+        return response
+    else:
+        # Fall back to original mock responses
         return get_mock_response(message)
 
 def get_mock_response(message):
@@ -163,13 +207,57 @@ def index():
         </div>
 
         <script>
-            function addMessage(message, isUser) {
+            let currentMessageId = null;
+            let currentSessionId = null;
+            let lastUserMessage = '';
+            let lastBotResponse = '';
+
+            function addMessage(message, isUser, messageData = null) {
                 const chatContainer = document.getElementById('chat-container');
                 const messageDiv = document.createElement('div');
                 messageDiv.className = 'message ' + (isUser ? 'user' : 'bot');
-                messageDiv.textContent = message;
+                
+                if (isUser) {
+                    messageDiv.textContent = message;
+                    lastUserMessage = message;
+                } else {
+                    messageDiv.innerHTML = message + 
+                        '<div style="margin-top: 10px;">' +
+                        '<button onclick="sendFeedback(true)" style="background: #28a745; color: white; border: none; padding: 5px 10px; margin-right: 5px; cursor: pointer; border-radius: 3px;">👍 Helpful</button>' +
+                        '<button onclick="sendFeedback(false)" style="background: #dc3545; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px;">👎 Not Helpful</button>' +
+                        '</div>';
+                    lastBotResponse = message;
+                    if (messageData) {
+                        currentMessageId = messageData.message_id;
+                        currentSessionId = messageData.session_id;
+                    }
+                }
+                
                 chatContainer.appendChild(messageDiv);
                 chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+
+            function sendFeedback(helpful) {
+                if (!currentMessageId) return;
+                
+                fetch('/feedback', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        session_id: currentSessionId,
+                        message_id: currentMessageId,
+                        user_message: lastUserMessage,
+                        bot_response: lastBotResponse,
+                        helpful: helpful,
+                        rating: helpful ? 5 : 2
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        addMessage('Thank you for your feedback! 🙏', false);
+                    }
+                });
             }
 
             function sendMessage() {
@@ -186,7 +274,7 @@ def index():
                     body: JSON.stringify({ message: message })
                 })
                 .then(response => response.json())
-                .then(data => addMessage(data.response, false))
+                .then(data => addMessage(data.response, false, data))
                 .catch(error => addMessage('Sorry, something went wrong. Please try again.', false));
             }
 
@@ -228,7 +316,142 @@ def chat():
     # Save conversation with session tracking
     save_conversation(user_message, bot_response, session['session_id'])
     
-    return jsonify({'response': bot_response})
+    return jsonify({
+        'response': bot_response,
+        'session_id': session['session_id'],
+        'message_id': str(uuid.uuid4())
+    })
+
+@app.route('/admin/knowledge', methods=['GET', 'POST'])
+def manage_knowledge():
+    """Admin interface for managing knowledge base"""
+    if request.method == 'POST':
+        # Update knowledge base
+        new_knowledge = request.get_json()
+        try:
+            with open('knowledge_base.json', 'w') as f:
+                json.dump(new_knowledge, f, indent=2)
+            return jsonify({'success': True, 'message': 'Knowledge base updated successfully'})
+        except Exception as e:
+            return jsonify({'success': False, 'message': str(e)})
+    
+    # Load current knowledge base
+    knowledge_base = load_knowledge_base()
+    
+    knowledge_html = f'''
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>3MTT Knowledge Base Management</title>
+        <style>
+            body {{ font-family: Arial, sans-serif; max-width: 1000px; margin: 50px auto; padding: 20px; }}
+            .section {{ background: #f5f5f5; padding: 15px; margin: 10px 0; border-radius: 5px; }}
+            textarea {{ width: 100%; height: 400px; font-family: monospace; }}
+            button {{ padding: 10px 20px; background-color: #007bff; color: white; border: none; cursor: pointer; margin: 5px; }}
+            .nav {{ margin-bottom: 20px; }}
+            .nav a {{ margin-right: 15px; text-decoration: none; color: #007bff; }}
+        </style>
+    </head>
+    <body>
+        <div class="nav">
+            <a href="/">← Chat</a>
+            <a href="/admin/analytics">Analytics</a>
+            <a href="/admin/knowledge">Knowledge Base</a>
+        </div>
+        
+        <h1>Knowledge Base Management</h1>
+        
+        <div class="section">
+            <h3>Current Knowledge Base</h3>
+            <textarea id="knowledge-editor">{json.dumps(knowledge_base, indent=2)}</textarea>
+            <br>
+            <button onclick="updateKnowledge()">Update Knowledge Base</button>
+            <button onclick="testKnowledge()">Test Knowledge Search</button>
+        </div>
+        
+        <div class="section">
+            <h3>Test Knowledge Search</h3>
+            <input type="text" id="test-query" placeholder="Enter test query..." style="width: 70%; padding: 10px;">
+            <button onclick="searchTest()">Search</button>
+            <div id="search-results" style="margin-top: 10px; padding: 10px; background: white; border: 1px solid #ddd;"></div>
+        </div>
+
+        <script>
+            function updateKnowledge() {{
+                const knowledge = document.getElementById('knowledge-editor').value;
+                try {{
+                    const parsed = JSON.parse(knowledge);
+                    fetch('/admin/knowledge', {{
+                        method: 'POST',
+                        headers: {{ 'Content-Type': 'application/json' }},
+                        body: JSON.stringify(parsed)
+                    }})
+                    .then(response => response.json())
+                    .then(data => {{
+                        alert(data.message);
+                        if (data.success) location.reload();
+                    }});
+                }} catch (e) {{
+                    alert('Invalid JSON format: ' + e.message);
+                }}
+            }}
+            
+            function searchTest() {{
+                const query = document.getElementById('test-query').value;
+                fetch('/admin/test-search', {{
+                    method: 'POST',
+                    headers: {{ 'Content-Type': 'application/json' }},
+                    body: JSON.stringify({{ query: query }})
+                }})
+                .then(response => response.json())
+                .then(data => {{
+                    document.getElementById('search-results').innerHTML = 
+                        '<h4>Search Results:</h4>' + 
+                        data.results.map(r => '<p>• ' + r + '</p>').join('');
+                }});
+            }}
+        </script>
+    </body>
+    </html>
+    '''
+    return render_template_string(knowledge_html)
+
+@app.route('/admin/test-search', methods=['POST'])
+def test_search():
+    """Test knowledge base search"""
+    data = request.get_json()
+    query = data.get('query', '')
+    knowledge_base = load_knowledge_base()
+    results = search_knowledge_base(query, knowledge_base)
+    return jsonify({'results': results})
+
+@app.route('/feedback', methods=['POST'])
+def collect_feedback():
+    """Collect user feedback on responses"""
+    data = request.get_json()
+    feedback = {
+        "timestamp": datetime.now().isoformat(),
+        "session_id": data.get('session_id'),
+        "message_id": data.get('message_id'),
+        "user_message": data.get('user_message'),
+        "bot_response": data.get('bot_response'),
+        "rating": data.get('rating'),  # 1-5 stars
+        "feedback_text": data.get('feedback_text', ''),
+        "helpful": data.get('helpful', True)
+    }
+    
+    try:
+        with open('training_data.json', 'r') as f:
+            training_data = json.load(f)
+    except FileNotFoundError:
+        training_data = {"training_examples": [], "feedback_data": [], "improvement_suggestions": []}
+    
+    training_data["feedback_data"].append(feedback)
+    
+    with open('training_data.json', 'w') as f:
+        json.dump(training_data, f, indent=2)
+    
+    return jsonify({'success': True, 'message': 'Feedback collected successfully'})
 
 @app.route('/admin/analytics')
 def analytics():
