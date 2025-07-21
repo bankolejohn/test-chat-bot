@@ -1,0 +1,47 @@
+[
+  {
+    "timestamp": "2025-07-12T04:11:25.919652",
+    "user_message": "hello",
+    "bot_response": "Thank you for contacting us! How can I help you today? You can ask about our office hours, products, or how to contact support."
+  },
+  {
+    "timestamp": "2025-07-12T04:11:39.007580",
+    "user_message": "when is your office hours",
+    "bot_response": "Our office hours are Monday-Friday 9AM-6PM EST. We're closed on weekends and holidays."
+  },
+  {
+    "timestamp": "2025-07-12T04:19:01.336975",
+    "user_message": "hello",
+    "bot_response": "Hello! Welcome to 3MTT support. How can I help you today? You can ask about dashboard scores, program timeline, or general support."
+  },
+  {
+    "timestamp": "2025-07-12T04:19:24.251795",
+    "user_message": "whats up with my dashboard score",
+    "bot_response": "This is because your dashboard gradually syncs with your Darey.io and it may take some time for your Darey.io score to tally with that of your dashboard."
+  },
+  {
+    "timestamp": "2025-07-12T04:19:37.397624",
+    "user_message": "why",
+    "bot_response": "Hello! Welcome to 3MTT support. How can I help you today? You can ask about dashboard scores, program timeline, or general support."
+  },
+  {
+    "timestamp": "2025-07-12T04:19:51.143455",
+    "user_message": "program timeline",
+    "bot_response": "Cohort 3 ends July 20th."
+  },
+  {
+    "timestamp": "2025-07-12T04:46:26.944168",
+    "user_message": "hi",
+    "bot_response": "Hello! Welcome to 3MTT support. How can I help you today? You can ask about dashboard scores, program timeline, course changes, assessments, or general support."
+  },
+  {
+    "timestamp": "2025-07-12T04:46:37.398885",
+    "user_message": "assesment",
+    "bot_response": "Hello! Welcome to 3MTT support. How can I help you today? You can ask about dashboard scores, program timeline, course changes, assessments, or general support."
+  },
+  {
+    "timestamp": "2025-07-12T04:46:49.551935",
+    "user_message": "assessments",
+    "bot_response": "Yes, there will be an entry assessment to determine the skill benchmark for each applicant. This will also be used in selecting the most applicable course for fellows."
+  }
+]
