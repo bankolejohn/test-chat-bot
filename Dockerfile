@@ -13,7 +13,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Create necessary directories and files
-RUN mkdir -p /app/data && \
+RUN mkdir -p /app && \
     touch /app/conversations.json && \
     touch /app/training_data.json
 
@@ -24,5 +24,5 @@ ENV FLASK_ENV=production
 # Expose port
 EXPOSE 8000
 
-# Run with Gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "2", "app:app"]
+# Run the application
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "app:app"]
