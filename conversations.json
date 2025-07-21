@@ -43,5 +43,101 @@
     "timestamp": "2025-07-12T04:46:49.551935",
     "user_message": "assessments",
     "bot_response": "Yes, there will be an entry assessment to determine the skill benchmark for each applicant. This will also be used in selecting the most applicable course for fellows."
+  },
+  {
+    "timestamp": "2025-07-21T11:38:25.510272",
+    "session_id": "5f4575f0-c6af-4d64-b780-f9e6cd8bdb20",
+    "user_message": "hi",
+    "bot_response": "Based on our knowledge base:\n\n\u2022 3mtt_program.overview: 3MTT (3 Million Technical Talent) is Nigeria's flagship skills development program aimed at building technical talent across the country.\n\u2022 onboarding.community_assignment: Community information appears on the community page within the 3MTT portal after assignment\n\nIs there anything specific you'd like to know more about?",
+    "sentiment": "neutral",
+    "message_length": 2
+  },
+  {
+    "timestamp": "2025-07-21T11:39:06.984713",
+    "session_id": "5f4575f0-c6af-4d64-b780-f9e6cd8bdb20",
+    "user_message": "i am devops student. how can you help me",
+    "bot_response": "Based on our knowledge base:\n\n\u2022 3mtt_program.overview: 3MTT (3 Million Technical Talent) is Nigeria's flagship skills development program aimed at building technical talent across the country.\n\u2022 3mtt_program.duration: The program runs for 12 months with different phases\n\u2022 3mtt_program.training_format: Hybrid - combines online learning through Darey.io platform with in-person sessions\n\nIs there anything specific you'd like to know more about?",
+    "sentiment": "neutral",
+    "message_length": 40
+  },
+  {
+    "timestamp": "2025-07-21T11:39:30.758065",
+    "session_id": "5f4575f0-c6af-4d64-b780-f9e6cd8bdb20",
+    "user_message": "help me as a devops student",
+    "bot_response": "Based on our knowledge base:\n\n\u2022 3mtt_program.overview: 3MTT (3 Million Technical Talent) is Nigeria's flagship skills development program aimed at building technical talent across the country.\n\u2022 3mtt_program.duration: The program runs for 12 months with different phases\n\u2022 3mtt_program.training_format: Hybrid - combines online learning through Darey.io platform with in-person sessions\n\nIs there anything specific you'd like to know more about?",
+    "sentiment": "neutral",
+    "message_length": 27
+  },
+  {
+    "timestamp": "2025-07-21T11:40:21.476659",
+    "session_id": "5f4575f0-c6af-4d64-b780-f9e6cd8bdb20",
+    "user_message": "when is the program supposed to end",
+    "bot_response": "Based on our knowledge base:\n\n\u2022 3mtt_program.overview: 3MTT (3 Million Technical Talent) is Nigeria's flagship skills development program aimed at building technical talent across the country.\n\u2022 3mtt_program.duration: The program runs for 12 months with different phases\n\u2022 courses.course_change_policy: Course changes are allowed before admission to the Learning Management System (LMS). Once admitted to LMS, course changes are not permitted.\n\nIs there anything specific you'd like to know more about?",
+    "sentiment": "neutral",
+    "message_length": 35
+  },
+  {
+    "timestamp": "2025-07-21T11:59:20.871334",
+    "session_id": "5f4575f0-c6af-4d64-b780-f9e6cd8bdb20",
+    "user_message": "hello",
+    "bot_response": "Hello! Welcome to 3MTT support. How can I help you today? You can ask about dashboard scores, program timeline, course changes, assessments, or general support.",
+    "sentiment": "neutral",
+    "message_length": 5
+  },
+  {
+    "timestamp": "2025-07-21T11:59:36.120201",
+    "session_id": "5f4575f0-c6af-4d64-b780-f9e6cd8bdb20",
+    "user_message": "i cant see my dasboard",
+    "bot_response": "Hello! Welcome to 3MTT support. How can I help you today? You can ask about dashboard scores, program timeline, course changes, assessments, or general support.",
+    "sentiment": "neutral",
+    "message_length": 22
+  },
+  {
+    "timestamp": "2025-07-21T11:59:43.728278",
+    "session_id": "5f4575f0-c6af-4d64-b780-f9e6cd8bdb20",
+    "user_message": "my dashboard",
+    "bot_response": "This is because your dashboard gradually syncs with your Darey.io and it may take some time for your Darey.io score to tally with that of your dashboard.",
+    "sentiment": "neutral",
+    "message_length": 12
+  },
+  {
+    "timestamp": "2025-07-21T12:38:30.159387",
+    "session_id": "5f4575f0-c6af-4d64-b780-f9e6cd8bdb20",
+    "user_message": "good",
+    "bot_response": "Hello! Welcome to 3MTT support. How can I help you today? You can ask about dashboard scores, program timeline, course changes, assessments, or general support.",
+    "sentiment": "positive",
+    "message_length": 4
+  },
+  {
+    "timestamp": "2025-07-21T12:49:29.935850",
+    "session_id": "5f4575f0-c6af-4d64-b780-f9e6cd8bdb20",
+    "user_message": "tell me about the program",
+    "bot_response": "Cohort 3 ends July 20th.",
+    "sentiment": "neutral",
+    "message_length": 25
+  },
+  {
+    "timestamp": "2025-07-21T12:50:01.602595",
+    "session_id": "5f4575f0-c6af-4d64-b780-f9e6cd8bdb20",
+    "user_message": "tell me more about the 3mtt program",
+    "bot_response": "Cohort 3 ends July 20th.",
+    "sentiment": "neutral",
+    "message_length": 35
+  },
+  {
+    "timestamp": "2025-07-21T12:50:31.209291",
+    "session_id": "5f4575f0-c6af-4d64-b780-f9e6cd8bdb20",
+    "user_message": "\"How many organizations are partnering with 3MTT?\"",
+    "bot_response": "Here's what I found that might help:\n\n\u2022 Executed in collaboration with NITDA, involving multiple stakeholders including fellows, training providers, partners and placement organisations\n\u2022 The program runs for 12 months with different phases\n\u2022 Software Development, Data Science & Analytics, Cybersecurity, Digital Marketing, UI/UX Design, Cloud Computing, DevOps Engineering, Product Management\n\nWould you like more details about any of these topics?",
+    "sentiment": "neutral",
+    "message_length": 50
+  },
+  {
+    "timestamp": "2025-07-21T12:51:11.901449",
+    "session_id": "5f4575f0-c6af-4d64-b780-f9e6cd8bdb20",
+    "user_message": "\"Tell me about the 3MTT program\"",
+    "bot_response": "Cohort 3 ends July 20th.",
+    "sentiment": "neutral",
+    "message_length": 32
   }
 ]

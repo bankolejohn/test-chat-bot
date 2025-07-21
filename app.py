@@ -35,20 +35,95 @@ def load_knowledge_base():
         print("Knowledge base file not found. Using basic knowledge.")
         return {}
 
+def flatten_dict_value(value, key_context=""):
+    """Flatten dictionary values for better searching"""
+    if isinstance(value, dict):
+        result = []
+        for k, v in value.items():
+            if isinstance(v, str):
+                result.append(f"{k}: {v}")
+            elif isinstance(v, list):
+                result.append(f"{k}: {', '.join(str(item) for item in v)}")
+            else:
+                result.append(f"{k}: {str(v)}")
+        return "; ".join(result)
+    elif isinstance(value, list):
+        return ", ".join(str(item) for item in value)
+    else:
+        return str(value)
+
 def search_knowledge_base(query, knowledge_base):
-    """Search knowledge base for relevant information"""
+    """Search knowledge base for relevant information with better matching"""
     query_lower = query.lower()
-    relevant_info = []
+    query_words = [word.strip() for word in query_lower.split() if len(word.strip()) > 2]
     
-    # Search through different sections
+    # Define specific keyword mappings for better matching
+    keyword_mappings = {
+        'dashboard': ['dashboard', 'score', 'sync', 'darey', 'different'],
+        'course': ['course', 'track', 'change', 'switch', 'program'],
+        'assessment': ['assessment', 'test', 'exam', 'evaluation', 'entry'],
+        'financial': ['financial', 'cost', 'fee', 'money', 'payment', 'support'],
+        'timeline': ['end', 'finish', 'when', 'date', 'timeline', 'cohort'],
+        'community': ['community', 'learning', 'group', 'assigned'],
+        'support': ['support', 'help', 'contact', 'assistance', 'hours'],
+        'onboarding': ['onboard', 'wait', 'waiting', 'start'],
+        'platform': ['platform', 'portal', 'login', 'access']
+    }
+    
+    # Score each section based on relevance
+    section_scores = {}
+    
     for section, content in knowledge_base.items():
+        score = 0
+        matched_content = []
+        
         if isinstance(content, dict):
             for key, value in content.items():
-                if any(word in key.lower() or (isinstance(value, str) and word in value.lower()) 
-                       for word in query_lower.split()):
-                    relevant_info.append(f"{section}.{key}: {value}")
+                key_lower = key.lower()
+                
+                # Flatten complex values for better searching
+                flattened_value = flatten_dict_value(value, key)
+                value_str = flattened_value.lower()
+                
+                # Direct word matching
+                for word in query_words:
+                    if word in key_lower or word in value_str:
+                        score += 2
+                        content_key = f"{section}.{key}"
+                        if content_key not in [item.split(': ')[0] for item in matched_content]:
+                            # Use original value for display, not flattened
+                            if isinstance(value, str):
+                                matched_content.append(f"{content_key}: {value}")
+                            else:
+                                matched_content.append(f"{content_key}: {flattened_value}")
+                
+                # Keyword category matching
+                for category, keywords in keyword_mappings.items():
+                    if any(kw in query_lower for kw in keywords):
+                        if any(kw in key_lower or kw in value_str for kw in keywords):
+                            score += 3
+                            content_key = f"{section}.{key}"
+                            if content_key not in [item.split(': ')[0] for item in matched_content]:
+                                if isinstance(value, str):
+                                    matched_content.append(f"{content_key}: {value}")
+                                else:
+                                    matched_content.append(f"{content_key}: {flattened_value}")
+        
+        if score > 0:
+            section_scores[section] = {'score': score, 'content': matched_content}
     
-    return relevant_info[:3]  # Return top 3 relevant pieces
+    # Return most relevant content
+    if not section_scores:
+        return []
+    
+    # Sort by score and return top matches
+    sorted_sections = sorted(section_scores.items(), key=lambda x: x[1]['score'], reverse=True)
+    relevant_info = []
+    
+    for section, data in sorted_sections[:2]:  # Top 2 sections
+        relevant_info.extend(data['content'][:2])  # Top 2 items per section
+    
+    return relevant_info[:3]  # Maximum 3 items total
 
 def get_ai_response(message, conversation_history=None):
     """Get response from OpenAI API with knowledge base context"""
@@ -66,17 +141,28 @@ def get_ai_response(message, conversation_history=None):
         relevant_info = search_knowledge_base(message, knowledge_base)
         
         # Build enhanced system prompt with knowledge base
-        system_content = """You are an expert customer support assistant for 3MTT (3 Million Technical Talent) organization.
+        if relevant_info:
+            system_content = f"""You are a helpful customer support assistant for 3MTT (3 Million Technical Talent) organization.
 
-KNOWLEDGE BASE CONTEXT:
-""" + "\n".join(relevant_info) + """
+Here's relevant information from our knowledge base:
+{chr(10).join(f"- {info.split(': ', 1)[1] if ': ' in info else info}" for info in relevant_info)}
 
-INSTRUCTIONS:
-- Use the knowledge base information above to provide accurate, specific answers
-- If the knowledge base doesn't contain the answer, acknowledge this and offer to connect them with support
-- Keep responses helpful, professional, and concise
-- Always prioritize information from the knowledge base over general assumptions
-- If asked about technical issues, provide step-by-step guidance when possible"""
+Instructions:
+- Answer the user's question using the information above
+- Be conversational and helpful, not robotic
+- If the information doesn't fully answer their question, acknowledge what you know and offer to help further
+- Keep responses concise but complete
+- Don't just repeat the knowledge base - use it to craft a natural response"""
+        else:
+            system_content = """You are a helpful customer support assistant for 3MTT (3 Million Technical Talent) organization.
+
+3MTT is Nigeria's skills development program that:
+- Trains technical talent across various tracks
+- Uses hybrid learning (online + in-person)
+- Runs for 12 months with different phases
+- Uses Darey.io as the learning platform
+
+Be helpful and conversational. If you don't have specific information, acknowledge this and offer to connect them with support."""
 
         messages = [{"role": "system", "content": system_content}]
         
@@ -100,20 +186,32 @@ INSTRUCTIONS:
         return get_enhanced_mock_response(message)
 
 def get_enhanced_mock_response(message):
-    """Enhanced mock response using knowledge base"""
-    knowledge_base = load_knowledge_base()
-    relevant_info = search_knowledge_base(message, knowledge_base)
+    """Enhanced mock response using knowledge base and original responses"""
+    # First try the original mock responses (they're more specific)
+    original_response = get_mock_response(message)
     
-    if relevant_info:
-        # Use knowledge base information
-        response = "Based on our knowledge base:\n\n"
-        for info in relevant_info:
-            response += f"• {info}\n"
-        response += "\nIs there anything specific you'd like to know more about?"
-        return response
+    # If we get the default response, try knowledge base
+    if original_response == MOCK_RESPONSES["default"]:
+        knowledge_base = load_knowledge_base()
+        relevant_info = search_knowledge_base(message, knowledge_base)
+        
+        if relevant_info and len(relevant_info) > 0:
+            # Use knowledge base information but make it more conversational
+            response = "Here's what I found that might help:\n\n"
+            for info in relevant_info:
+                # Clean up the format
+                parts = info.split(': ', 1)
+                if len(parts) == 2:
+                    response += f"• {parts[1]}\n"
+                else:
+                    response += f"• {info}\n"
+            response += "\nWould you like more details about any of these topics?"
+            return response
+        else:
+            return original_response
     else:
-        # Fall back to original mock responses
-        return get_mock_response(message)
+        # Return the specific original response
+        return original_response
 
 def get_mock_response(message):
     """Return appropriate mock response based on message content"""
@@ -515,4 +613,4 @@ def analytics():
     return render_template_string(analytics_html)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5001)

@@ -1,15 +1,28 @@
 {
   "3mtt_program": {
-    "overview": "3MTT (3 Million Technical Talent) is Nigeria's flagship skills development program aimed at building technical talent across the country.",
+    "overview": "The 3 Million Technical Talent (3MTT) programme, a critical part of the Renewed Hope agenda, is aimed at building Nigeria's technical talent backbone to power our digital economy and position Nigeria as a net talent exporter.",
+    "mission": "To build Nigeria's technical talent backbone to power the digital economy and position Nigeria as a net talent exporter",
+    "execution_partners": "Executed in collaboration with NITDA, involving multiple stakeholders including fellows, training providers, partners and placement organisations",
     "duration": "The program runs for 12 months with different phases",
+    "training_format": "Hybrid - combines online learning through Darey.io platform with in-person sessions",
+    "phase_1": {
+      "launch_date": "December 2023",
+      "fellows_count": "30,000 fellows selected across all 36 states and the FCT",
+      "training_approach": "Intense learning journey that included self-paced online courses and physical applied learning sessions",
+      "partnerships": "Executed in partnership with 120+ organizations"
+    },
+    "phase_2": {
+      "target": "270,000 technical talents",
+      "structure": "Three cohorts of 60,000, 90,000 and 120,000 respectively",
+      "collaboration": "Executed in collaboration with hundreds of applied learning clusters, state governments, development agencies and other key stakeholders"
+    },
     "cohorts": {
       "cohort_3": {
         "start_date": "2024-01-15",
         "end_date": "2024-07-20",
         "status": "active"
       }
-    },
-    "training_format": "Hybrid - combines online learning through Darey.io platform with in-person sessions"
+    }
   },
   "courses": {
     "available_tracks": [

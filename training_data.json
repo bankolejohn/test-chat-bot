@@ -4,33 +4,69 @@
       "user_input": "Why is my dashboard score different from Darey.io?",
       "expected_response": "Dashboard scores sync gradually with Darey.io platform. There may be delays in synchronization, which is normal. Your scores will update automatically once the sync is complete.",
       "category": "technical_support",
-      "keywords": ["dashboard", "score", "sync", "darey"]
+      "keywords": [
+        "dashboard",
+        "score",
+        "sync",
+        "darey"
+      ]
     },
     {
       "user_input": "Can I change my course after starting?",
       "expected_response": "Course changes are allowed before admission to the Learning Management System (LMS). Once you've been admitted to the LMS, course changes are not permitted. However, you can change your location at any time during Cohort 3.",
       "category": "course_management",
-      "keywords": ["course", "change", "LMS", "admission"]
+      "keywords": [
+        "course",
+        "change",
+        "LMS",
+        "admission"
+      ]
     },
     {
       "user_input": "What financial support is available?",
       "expected_response": "The program covers training costs only. Participants are responsible for transportation, meals, and other personal expenses. No additional financial support is provided for this phase of the program.",
       "category": "financial_info",
-      "keywords": ["financial", "support", "cost", "expenses"]
+      "keywords": [
+        "financial",
+        "support",
+        "cost",
+        "expenses"
+      ]
     },
     {
       "user_input": "When does cohort 3 end?",
       "expected_response": "Cohort 3 ends on July 20th, 2024. The program runs for 12 months with different phases throughout this period.",
       "category": "program_timeline",
-      "keywords": ["cohort", "end", "timeline", "july"]
+      "keywords": [
+        "cohort",
+        "end",
+        "timeline",
+        "july"
+      ]
     },
     {
       "user_input": "Is the training online or in-person?",
       "expected_response": "The training is hybrid, combining online learning through the Darey.io platform with in-person sessions. While most training can be done remotely, some aspects require physical attendance.",
       "category": "training_format",
-      "keywords": ["hybrid", "online", "in-person", "darey"]
+      "keywords": [
+        "hybrid",
+        "online",
+        "in-person",
+        "darey"
+      ]
     }
   ],
-  "feedback_data": [],
+  "feedback_data": [
+    {
+      "timestamp": "2025-07-21T11:39:19.056237",
+      "session_id": "5f4575f0-c6af-4d64-b780-f9e6cd8bdb20",
+      "message_id": "fc551e27-bd21-46b8-af5e-1392fc0fc4e9",
+      "user_message": "i am devops student. how can you help me",
+      "bot_response": "Based on our knowledge base:\n\n\u2022 3mtt_program.overview: 3MTT (3 Million Technical Talent) is Nigeria's flagship skills development program aimed at building technical talent across the country.\n\u2022 3mtt_program.duration: The program runs for 12 months with different phases\n\u2022 3mtt_program.training_format: Hybrid - combines online learning through Darey.io platform with in-person sessions\n\nIs there anything specific you'd like to know more about?",
+      "rating": 2,
+      "feedback_text": "",
+      "helpful": false
+    }
+  ],
   "improvement_suggestions": []
 }
