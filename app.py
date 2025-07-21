@@ -204,7 +204,7 @@ def create_intelligent_response(message, knowledge_base):
             'response': lambda kb: f"Don't worry about dashboard score differences - this is completely normal! {kb['platform']['dashboard_sync']} The system automatically updates, so just give it some time to sync properly."
         },
         'course_changes': {
-            'keywords': ['change course', 'switch course', 'course change', 'different course'],
+            'keywords': ['change course', 'switch course', 'course change', 'different course', 'can i switch', 'can i change'],
             'response': lambda kb: f"Yes, you can change your course, but timing matters! {kb['courses']['course_change_policy']} Also, {kb['courses']['location_change_policy']} So you have flexibility with location throughout the program."
         },
         'program_timeline': {
@@ -216,7 +216,7 @@ def create_intelligent_response(message, knowledge_base):
             'response': lambda kb: f"Here's what's covered financially: {kb['support']['financial_support']} The program covers your training costs, which is the main expense, but you'll need to handle your own transportation and meals for in-person sessions."
         },
         'available_courses': {
-            'keywords': ['what courses', 'available tracks', 'course options', 'tracks available'],
+            'keywords': ['what courses', 'available tracks', 'course options', 'tracks available', 'what tracks', 'courses offer'],
             'response': lambda kb: f"We offer {len(kb['courses']['available_tracks'])} exciting tracks: {', '.join(kb['courses']['available_tracks'])}. Each track is designed to meet industry demands and help you build relevant skills for the digital economy."
         },
         'contact_support': {
@@ -675,4 +675,5 @@ def analytics():
     return render_template_string(analytics_html)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5001)
+    port = int(os.environ.get('PORT', 5002))
+    app.run(debug=False, host='0.0.0.0', port=port)

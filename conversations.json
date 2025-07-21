@@ -139,5 +139,29 @@
     "bot_response": "Cohort 3 ends July 20th.",
     "sentiment": "neutral",
     "message_length": 32
+  },
+  {
+    "timestamp": "2025-07-21T13:05:37.880656",
+    "session_id": "5f4575f0-c6af-4d64-b780-f9e6cd8bdb20",
+    "user_message": "hi",
+    "bot_response": "Hello! Welcome to 3MTT support. How can I help you today? You can ask about dashboard scores, program timeline, course changes, assessments, or general support.",
+    "sentiment": "neutral",
+    "message_length": 2
+  },
+  {
+    "timestamp": "2025-07-21T13:05:58.660002",
+    "session_id": "5f4575f0-c6af-4d64-b780-f9e6cd8bdb20",
+    "user_message": "info about 3mtt program",
+    "bot_response": "The 3 Million Technical Talent (3MTT) programme, a critical part of the Renewed Hope agenda, is aimed at building Nigeria's technical talent backbone to power our digital economy and position Nigeria as a net talent exporter. The program is part of Nigeria's Renewed Hope agenda and aims to train technical talent across multiple phases. Phase 1 launched in December 2023 with 30,000 fellows, while Phase 2 will train 270,000 more technical talents.",
+    "sentiment": "neutral",
+    "message_length": 23
+  },
+  {
+    "timestamp": "2025-07-21T13:06:33.576858",
+    "session_id": "5f4575f0-c6af-4d64-b780-f9e6cd8bdb20",
+    "user_message": "are you sure?",
+    "bot_response": "Hello! Welcome to 3MTT support. How can I help you today? You can ask about dashboard scores, program timeline, course changes, assessments, or general support.",
+    "sentiment": "neutral",
+    "message_length": 13
   }
 ]
