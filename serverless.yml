@@ -1,0 +1,31 @@
+service: 3mtt-chatbot
+
+provider:
+  name: aws
+  runtime: python3.11
+  region: us-east-1
+  environment:
+    SECRET_KEY: ${env:SECRET_KEY}
+    OPENAI_API_KEY: ${env:OPENAI_API_KEY}
+
+functions:
+  app:
+    handler: lambda_handler.lambda_handler
+    events:
+      - http:
+          path: /
+          method: ANY
+      - http:
+          path: /{proxy+}
+          method: ANY
+    timeout: 30
+
+plugins:
+  - serverless-python-requirements
+  - serverless-wsgi
+
+custom:
+  wsgi:
+    app: app.app
+  pythonRequirements:
+    dockerizePip: true
