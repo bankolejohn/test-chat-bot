@@ -66,6 +66,16 @@
       "rating": 2,
       "feedback_text": "",
       "helpful": false
+    },
+    {
+      "timestamp": "2025-07-21T13:06:07.065033",
+      "session_id": "5f4575f0-c6af-4d64-b780-f9e6cd8bdb20",
+      "message_id": "d60a793b-d1a2-47ba-8e39-e0d9f0681cea",
+      "user_message": "info about 3mtt program",
+      "bot_response": "The 3 Million Technical Talent (3MTT) programme, a critical part of the Renewed Hope agenda, is aimed at building Nigeria's technical talent backbone to power our digital economy and position Nigeria as a net talent exporter. The program is part of Nigeria's Renewed Hope agenda and aims to train technical talent across multiple phases. Phase 1 launched in December 2023 with 30,000 fellows, while Phase 2 will train 270,000 more technical talents.",
+      "rating": 5,
+      "feedback_text": "",
+      "helpful": true
     }
   ],
   "improvement_suggestions": []
