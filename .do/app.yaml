@@ -1,0 +1,18 @@
+name: 3mtt-chatbot
+services:
+- name: web
+  source_dir: /
+  github:
+    repo: your-username/your-repo-name
+    branch: main
+  run_command: python app.py
+  environment_slug: python
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  envs:
+  - key: SECRET_KEY
+    scope: RUN_TIME
+    type: SECRET
+  - key: OPENAI_API_KEY
+    scope: RUN_TIME
+    type: SECRET
