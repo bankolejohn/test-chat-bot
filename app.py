@@ -141,28 +141,32 @@ def get_ai_response(message, conversation_history=None):
         relevant_info = search_knowledge_base(message, knowledge_base)
         
         # Build enhanced system prompt with knowledge base
+        knowledge_context = ""
         if relevant_info:
-            system_content = f"""You are a helpful customer support assistant for 3MTT (3 Million Technical Talent) organization.
+            # Extract clean information from search results
+            clean_info = []
+            for info in relevant_info:
+                if ': ' in info:
+                    clean_info.append(info.split(': ', 1)[1])
+                else:
+                    clean_info.append(info)
+            knowledge_context = "\n".join(f"- {info}" for info in clean_info)
+        
+        system_content = f"""You are a friendly and knowledgeable customer support assistant for 3MTT (3 Million Technical Talent), Nigeria's flagship technical skills development program.
 
-Here's relevant information from our knowledge base:
-{chr(10).join(f"- {info.split(': ', 1)[1] if ': ' in info else info}" for info in relevant_info)}
+ABOUT 3MTT:
+3MTT is part of Nigeria's Renewed Hope agenda, aimed at building the country's technical talent backbone to power the digital economy. The program has trained 30,000 fellows in Phase 1 (launched December 2023) and plans to train 270,000 more in Phase 2 across three cohorts.
 
-Instructions:
-- Answer the user's question using the information above
-- Be conversational and helpful, not robotic
-- If the information doesn't fully answer their question, acknowledge what you know and offer to help further
-- Keep responses concise but complete
-- Don't just repeat the knowledge base - use it to craft a natural response"""
-        else:
-            system_content = """You are a helpful customer support assistant for 3MTT (3 Million Technical Talent) organization.
+{f"RELEVANT INFORMATION FOR THIS QUERY:{chr(10)}{knowledge_context}" if knowledge_context else ""}
 
-3MTT is Nigeria's skills development program that:
-- Trains technical talent across various tracks
-- Uses hybrid learning (online + in-person)
-- Runs for 12 months with different phases
-- Uses Darey.io as the learning platform
-
-Be helpful and conversational. If you don't have specific information, acknowledge this and offer to connect them with support."""
+INSTRUCTIONS:
+- Be conversational, helpful, and empathetic
+- Provide complete, coherent answers that make sense
+- Use the context above to give accurate information
+- If you don't have specific information, be honest about it
+- Always aim to be helpful and guide users to solutions
+- Keep responses natural and human-like, not robotic
+- Don't just list facts - explain them in context"""
 
         messages = [{"role": "system", "content": system_content}]
         
@@ -185,33 +189,91 @@ Be helpful and conversational. If you don't have specific information, acknowled
         print(f"AI Error: {e}")
         return get_enhanced_mock_response(message)
 
-def get_enhanced_mock_response(message):
-    """Enhanced mock response using knowledge base and original responses"""
-    # First try the original mock responses (they're more specific)
-    original_response = get_mock_response(message)
+def create_intelligent_response(message, knowledge_base):
+    """Create intelligent, contextual responses based on user intent"""
+    message_lower = message.lower()
     
-    # If we get the default response, try knowledge base
-    if original_response == MOCK_RESPONSES["default"]:
-        knowledge_base = load_knowledge_base()
-        relevant_info = search_knowledge_base(message, knowledge_base)
-        
-        if relevant_info and len(relevant_info) > 0:
-            # Use knowledge base information but make it more conversational
-            response = "Here's what I found that might help:\n\n"
-            for info in relevant_info:
-                # Clean up the format
-                parts = info.split(': ', 1)
-                if len(parts) == 2:
-                    response += f"• {parts[1]}\n"
-                else:
-                    response += f"• {info}\n"
-            response += "\nWould you like more details about any of these topics?"
-            return response
-        else:
-            return original_response
+    # Define response templates for different intents
+    response_templates = {
+        'program_overview': {
+            'keywords': ['what is 3mtt', 'about 3mtt', 'tell me about', 'program overview', 'what is the program'],
+            'response': lambda kb: f"{kb['3mtt_program']['overview']} The program is part of Nigeria's Renewed Hope agenda and aims to train technical talent across multiple phases. Phase 1 launched in December 2023 with 30,000 fellows, while Phase 2 will train 270,000 more technical talents."
+        },
+        'dashboard_issues': {
+            'keywords': ['dashboard', 'score', 'sync', 'different', 'darey'],
+            'response': lambda kb: f"Don't worry about dashboard score differences - this is completely normal! {kb['platform']['dashboard_sync']} The system automatically updates, so just give it some time to sync properly."
+        },
+        'course_changes': {
+            'keywords': ['change course', 'switch course', 'course change', 'different course'],
+            'response': lambda kb: f"Yes, you can change your course, but timing matters! {kb['courses']['course_change_policy']} Also, {kb['courses']['location_change_policy']} So you have flexibility with location throughout the program."
+        },
+        'program_timeline': {
+            'keywords': ['when end', 'program end', 'cohort end', 'finish', 'timeline'],
+            'response': lambda kb: f"Cohort 3 ends on July 20th, 2024. The overall program runs for 12 months with different phases, and we're currently in an active phase of the program."
+        },
+        'financial_support': {
+            'keywords': ['financial', 'money', 'cost', 'fee', 'payment', 'support'],
+            'response': lambda kb: f"Here's what's covered financially: {kb['support']['financial_support']} The program covers your training costs, which is the main expense, but you'll need to handle your own transportation and meals for in-person sessions."
+        },
+        'available_courses': {
+            'keywords': ['what courses', 'available tracks', 'course options', 'tracks available'],
+            'response': lambda kb: f"We offer {len(kb['courses']['available_tracks'])} exciting tracks: {', '.join(kb['courses']['available_tracks'])}. Each track is designed to meet industry demands and help you build relevant skills for the digital economy."
+        },
+        'contact_support': {
+            'keywords': ['contact', 'support', 'help', 'assistance', 'reach out'],
+            'response': lambda kb: f"You can reach our support team through multiple channels: {', '.join(kb['support']['contact_methods'])}. Our office hours are {kb['support']['office_hours']}, and we're here to help with any 3MTT related questions!"
+        },
+        'onboarding_wait': {
+            'keywords': ['waiting', 'onboard', 'when start', 'access'],
+            'response': lambda kb: f"While you're waiting for full onboarding, you're not left empty-handed! {kb['onboarding']['waiting_period']} This gives you a head start on learning and connecting with your peers."
+        },
+        'assessments': {
+            'keywords': ['assessment', 'test', 'exam', 'evaluation'],
+            'response': lambda kb: f"Yes, there will be assessments! {kb['assessments']['entry_assessment']['purpose']} and they happen {kb['assessments']['entry_assessment']['timing']}. Don't worry - they're designed to help place you in the right track for your skill level."
+        },
+        'technical_issues': {
+            'keywords': ['login', 'access', 'error', 'problem', 'trouble', 'issue', 'bug'],
+            'response': lambda kb: f"I understand you're having technical difficulties. For login and access issues, please ensure you have a stable internet connection and are using a modern web browser as required. If the problem persists, please contact our support team through {', '.join(kb['support']['contact_methods'])} during our office hours: {kb['support']['office_hours']}."
+        },
+        'learning_community': {
+            'keywords': ['community', 'group', 'peers', 'meetup', 'assigned'],
+            'response': lambda kb: f"Great question about learning communities! {kb['support']['learning_communities']} {kb['onboarding']['community_assignment']} This helps you connect with fellow learners in your area for collaboration and support."
+        },
+        'program_phases': {
+            'keywords': ['phase 1', 'phase 2', 'phases', 'cohort', 'fellows'],
+            'response': lambda kb: f"The 3MTT program has multiple phases: Phase 1 launched in December 2023 with {kb['3mtt_program']['phase_1']['fellows_count']} and included {kb['3mtt_program']['phase_1']['training_approach']}. Phase 2 will be even bigger, targeting {kb['3mtt_program']['phase_2']['target']} in {kb['3mtt_program']['phase_2']['structure']}."
+        }
+    }
+    
+    # Find the best matching intent
+    best_match = None
+    max_matches = 0
+    
+    for intent, config in response_templates.items():
+        matches = sum(1 for keyword in config['keywords'] if keyword in message_lower)
+        if matches > max_matches:
+            max_matches = matches
+            best_match = intent
+    
+    # Generate response based on best match
+    if best_match and max_matches > 0:
+        try:
+            return response_templates[best_match]['response'](knowledge_base)
+        except KeyError as e:
+            print(f"Missing knowledge base key: {e}")
+            return get_mock_response(message)
+    
+    # Fallback to original mock responses
+    return get_mock_response(message)
+
+def get_enhanced_mock_response(message):
+    """Enhanced mock response with intelligent, contextual responses"""
+    knowledge_base = load_knowledge_base()
+    
+    if knowledge_base:
+        return create_intelligent_response(message, knowledge_base)
     else:
-        # Return the specific original response
-        return original_response
+        return get_mock_response(message)
 
 def get_mock_response(message):
     """Return appropriate mock response based on message content"""
