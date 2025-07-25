@@ -195,5 +195,29 @@
     "bot_response": "Hello! Welcome to 3MTT support. How can I help you today? You can ask about dashboard scores, program timeline, course changes, assessments, or general support.",
     "sentiment": "neutral",
     "message_length": 7
+  },
+  {
+    "timestamp": "2025-07-21T20:23:47.704521",
+    "session_id": "5f4575f0-c6af-4d64-b780-f9e6cd8bdb20",
+    "user_message": "hello",
+    "bot_response": "Hello! Welcome to 3MTT support. How can I help you today? You can ask about dashboard scores, program timeline, course changes, assessments, or general support.",
+    "sentiment": "neutral",
+    "message_length": 5
+  },
+  {
+    "timestamp": "2025-07-25T00:00:07.984460",
+    "session_id": "25d7145d-2954-4f58-abc2-d1692f404535",
+    "user_message": "hello",
+    "bot_response": "Hello! Welcome to 3MTT support. How can I help you today? You can ask about dashboard scores, program timeline, course changes, assessments, or general support.",
+    "sentiment": "neutral",
+    "message_length": 5
+  },
+  {
+    "timestamp": "2025-07-25T01:13:05.537728",
+    "session_id": "25d7145d-2954-4f58-abc2-d1692f404535",
+    "user_message": "why is my dashboard",
+    "bot_response": "Don't worry about dashboard score differences - this is completely normal! Dashboard scores sync gradually with Darey.io. There may be delays in score synchronization. The system automatically updates, so just give it some time to sync properly.",
+    "sentiment": "neutral",
+    "message_length": 19
   }
 ]
