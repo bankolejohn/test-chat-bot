@@ -19,9 +19,17 @@ cd 3mtt-chatbot
 # Install dependencies
 pip3.11 install -r requirements.txt
 
-# Set environment variables
-export SECRET_KEY="your-secret-key-here"
-export OPENAI_API_KEY="your-openai-key-here"
+# Create environment file for secrets (DO NOT commit this file)
+echo "Creating environment file for secrets..."
+cat > .env << EOF
+SECRET_KEY=your-secret-key-here
+OPENAI_API_KEY=your-openai-key-here
+EOF
+
+echo "⚠️  IMPORTANT: Please edit .env file with your actual secrets:"
+echo "   nano .env"
+echo "   Then press Enter to continue..."
+read -p "Press Enter after updating .env file..."
 
 # Install and configure Nginx
 sudo yum install -y nginx
@@ -40,8 +48,7 @@ After=network.target
 [Service]
 User=ec2-user
 WorkingDirectory=/home/ec2-user/3mtt-chatbot
-Environment=SECRET_KEY=your-secret-key-here
-Environment=OPENAI_API_KEY=your-openai-key-here
+EnvironmentFile=/home/ec2-user/3mtt-chatbot/.env
 ExecStart=/usr/local/bin/gunicorn --workers 3 --bind 127.0.0.1:5000 app:app
 Restart=always
 
