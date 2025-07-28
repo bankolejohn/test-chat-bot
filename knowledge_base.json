@@ -27,7 +27,7 @@
   "courses": {
     "available_tracks": [
       "Software Development",
-      "Data Science & Analytics", 
+      "Data Science & Analytics",
       "Cybersecurity",
       "Digital Marketing",
       "UI/UX Design",
@@ -55,7 +55,11 @@
     "financial_support": "Program covers training costs only. Participants are responsible for transportation, meals, and other personal expenses.",
     "learning_communities": "Fellows are assigned to location-based learning communities for peer collaboration and meetups",
     "office_hours": "Monday-Friday 9AM-6PM WAT (West Africa Time)",
-    "contact_methods": ["Email support", "Portal messaging", "Community forums"]
+    "contact_methods": [
+      "Email support",
+      "Portal messaging",
+      "Community forums"
+    ]
   },
   "onboarding": {
     "waiting_period": "During onboarding wait, fellows get access to free resources, collaborative self-paced learning, and information about physical meetups",
@@ -66,11 +70,34 @@
     "device_requirements": "Computer/laptop with modern web browser",
     "software_tools": "Specific tools vary by track and will be communicated during onboarding"
   },
+  "application_process": {
+    "eligibility": "Nigerian citizens aged 18-35 with basic digital literacy and passion for technology",
+    "application_steps": "1. Online application through 3MTT portal → 2. Take entry assessment → 3. Selection based on scores and location → 4. Onboarding and community assignment",
+    "required_documents": "Valid government-issued ID, educational certificates, passport photograph, proof of residence",
+    "application_deadlines": "Applications typically open quarterly. Check the official 3MTT portal for current application windows",
+    "selection_criteria": "Assessment scores, geographic distribution, track preference, and commitment to complete the program"
+  },
+  "learning_experience": {
+    "daily_commitment": "4-6 hours of learning per day including self-paced modules and live sessions",
+    "learning_methods": "Hybrid approach: self-paced online courses, live virtual sessions, hands-on projects, peer collaboration, and physical meetups",
+    "mentorship": "Industry mentors assigned to guide fellows throughout their learning journey",
+    "project_requirements": "Hands-on projects and capstone project required for program completion",
+    "assessment_frequency": "Regular assessments including weekly quizzes, monthly projects, and final evaluation"
+  },
+  "career_support": {
+    "job_placement": "Job placement assistance provided upon successful program completion",
+    "industry_partnerships": "Partnerships with 500+ companies across Nigeria and internationally for job opportunities",
+    "career_guidance": "One-on-one career counseling sessions and resume building support",
+    "networking": "Regular industry networking events and access to alumni community",
+    "freelance_opportunities": "Platform for connecting with freelance projects and gig opportunities"
+  },
   "faq": {
     "common_issues": {
       "dashboard_sync": "Dashboard scores may take time to sync with Darey.io platform. This is normal and scores will update automatically.",
       "community_access": "Community information becomes available on your portal dashboard once you're assigned to a learning community.",
-      "course_selection": "Carefully consider your course choice as changes are only allowed before LMS admission."
+      "course_selection": "Carefully consider your course choice as changes are only allowed before LMS admission.",
+      "application_status": "Check your application status through the 3MTT portal. Successful applicants will be notified via email and SMS.",
+      "technical_requirements": "Minimum requirements: 4GB RAM, stable internet connection, modern web browser. Mobile app available for iOS and Android."
     }
   }
 }
