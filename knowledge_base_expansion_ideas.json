@@ -1,0 +1,98 @@
+{
+  "expanded_knowledge_suggestions": {
+    "application_process": {
+      "eligibility_criteria": "Nigerian citizens aged 18-35 with basic digital literacy",
+      "application_steps": "Online application → Assessment → Selection → Onboarding",
+      "required_documents": ["Valid ID", "Educational certificates", "Passport photograph"],
+      "application_deadlines": "Applications typically open quarterly",
+      "selection_criteria": "Based on assessment scores, location, and track preference"
+    },
+    "detailed_course_info": {
+      "software_development": {
+        "duration": "6 months intensive training",
+        "prerequisites": "Basic computer skills, logical thinking",
+        "curriculum": ["HTML/CSS", "JavaScript", "Python/Java", "Database management", "Project development"],
+        "career_outcomes": "Full-stack developer, Frontend developer, Backend developer",
+        "certification": "3MTT Software Development Certificate"
+      },
+      "data_science": {
+        "duration": "6 months intensive training", 
+        "prerequisites": "Basic mathematics, analytical thinking",
+        "curriculum": ["Python", "Statistics", "Machine Learning", "Data Visualization", "SQL"],
+        "career_outcomes": "Data Analyst, Data Scientist, Business Intelligence Analyst",
+        "tools": ["Python", "R", "Tableau", "Power BI", "SQL"]
+      },
+      "cybersecurity": {
+        "duration": "6 months intensive training",
+        "prerequisites": "Basic IT knowledge, attention to detail",
+        "curriculum": ["Network Security", "Ethical Hacking", "Risk Assessment", "Incident Response"],
+        "career_outcomes": "Security Analyst, Penetration Tester, Security Consultant",
+        "certifications": "Industry-recognized security certifications"
+      }
+    },
+    "learning_experience": {
+      "daily_schedule": "4-6 hours of learning per day",
+      "learning_methods": ["Self-paced online modules", "Live virtual sessions", "Hands-on projects", "Peer collaboration"],
+      "mentorship": "Assigned industry mentors for guidance",
+      "project_requirements": "Capstone project required for completion",
+      "assessment_frequency": "Weekly quizzes, monthly projects, final assessment"
+    },
+    "career_support": {
+      "job_placement": "Job placement assistance upon completion",
+      "industry_partnerships": "Partnerships with 500+ companies for job opportunities",
+      "career_counseling": "One-on-one career guidance sessions",
+      "networking_events": "Regular industry networking events",
+      "alumni_network": "Access to 3MTT alumni community",
+      "freelance_opportunities": "Freelance project matching platform"
+    },
+    "technical_support": {
+      "platform_issues": {
+        "login_problems": "Clear browser cache, try incognito mode, contact support if persistent",
+        "video_not_loading": "Check internet connection, try different browser, ensure latest browser version",
+        "assignment_submission": "Ensure file size under 10MB, supported formats: PDF, DOC, ZIP",
+        "progress_not_saving": "Complete modules fully, wait for auto-save confirmation"
+      },
+      "device_requirements": {
+        "minimum_specs": "4GB RAM, stable internet connection, modern web browser",
+        "recommended_specs": "8GB RAM, dedicated graphics for design tracks",
+        "mobile_compatibility": "Mobile app available for iOS and Android",
+        "offline_access": "Limited offline content available for download"
+      }
+    },
+    "locations_and_hubs": {
+      "learning_hubs": "Physical learning centers in all 36 states and FCT",
+      "hub_facilities": ["Computer labs", "High-speed internet", "Study spaces", "Technical support"],
+      "hub_hours": "Monday-Saturday 8AM-6PM",
+      "hub_booking": "Book study sessions through the portal",
+      "state_coordinators": "Each state has dedicated program coordinators"
+    },
+    "certification_and_graduation": {
+      "completion_requirements": "80% attendance, pass all assessments, complete capstone project",
+      "certificate_types": ["Course completion certificate", "Industry certification", "Digital badges"],
+      "graduation_ceremony": "Virtual and physical graduation ceremonies",
+      "transcript_access": "Digital transcripts available through portal",
+      "continuing_education": "Access to advanced courses post-graduation"
+    },
+    "program_policies": {
+      "attendance_policy": "Minimum 80% attendance required for certification",
+      "code_of_conduct": "Professional behavior expected, zero tolerance for harassment",
+      "intellectual_property": "Students retain rights to their projects",
+      "refund_policy": "No refunds as program is fully sponsored",
+      "withdrawal_process": "Formal withdrawal process through portal"
+    },
+    "success_stories": {
+      "employment_rate": "85% of graduates employed within 6 months",
+      "salary_improvements": "Average 200% salary increase post-graduation",
+      "startup_creation": "Over 500 startups created by alumni",
+      "international_opportunities": "Alumni working in 15+ countries",
+      "testimonials": "Featured success stories on program website"
+    },
+    "partnerships": {
+      "training_providers": "120+ certified training organizations",
+      "employer_partners": "500+ companies for job placement",
+      "international_partners": "Partnerships with global tech companies",
+      "government_support": "Backed by Federal Ministry of Communications",
+      "funding_sources": "World Bank, private sector contributions"
+    }
+  }
+}
