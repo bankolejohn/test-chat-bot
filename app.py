@@ -1,15 +1,34 @@
-from flask import Flask, request, jsonify, render_template_string, session
+from flask import Flask, request, jsonify, render_template_string, session, g
 import json
 import os
 import uuid
+import time
+import html
 from datetime import datetime
 from dotenv import load_dotenv
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+import logging
 
 # Load environment variables
 load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'your-secret-key-change-in-production')
+
+# Setup rate limiting
+limiter = Limiter(
+    app,
+    key_func=get_remote_address,
+    default_limits=["200 per day", "50 per hour"]
+)
+
+# Setup logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s %(levelname)s %(name)s %(message)s'
+)
+logger = logging.getLogger('chatbot')
 
 # Mock responses for 3MTT organization
 MOCK_RESPONSES = {
@@ -275,6 +294,24 @@ def get_enhanced_mock_response(message):
     else:
         return get_mock_response(message)
 
+def contains_malicious_content(text):
+    """Check for potentially malicious content"""
+    import re
+    malicious_patterns = [
+        r'<script[^>]*>.*?</script>',  # Script tags
+        r'javascript:',                # JavaScript URLs
+        r'on\w+\s*=',                 # Event handlers
+        r'<iframe[^>]*>',             # Iframes
+        r'<object[^>]*>',             # Objects
+        r'<embed[^>]*>',              # Embeds
+    ]
+    
+    text_lower = text.lower()
+    for pattern in malicious_patterns:
+        if re.search(pattern, text_lower, re.IGNORECASE):
+            return True
+    return False
+
 def get_mock_response(message):
     """Return appropriate mock response based on message content"""
     message_lower = message.lower()
@@ -451,13 +488,85 @@ def index():
     return render_template_string(html)
 
 @app.route('/chat', methods=['POST'])
+@limiter.limit("5 per minute")
 def chat():
-    """Handle chat messages"""
-    data = request.get_json()
-    user_message = data.get('message', '')
+    """Handle chat messages with security and monitoring"""
+    start_time = time.time()
     
-    if not user_message:
-        return jsonify({'error': 'No message provided'}), 400
+    try:
+        data = request.get_json()
+        if not data:
+            logger.warning("Invalid JSON received", extra={'remote_addr': request.remote_addr})
+            return jsonify({'error': 'Invalid JSON'}), 400
+        
+        user_message = data.get('message', '')
+        
+        # Input validation
+        if not user_message:
+            return jsonify({'error': 'No message provided'}), 400
+        
+        if len(user_message) > 1000:
+            logger.warning("Message too long", extra={'length': len(user_message), 'remote_addr': request.remote_addr})
+            return jsonify({'error': 'Message too long (max 1000 characters)'}), 400
+        
+        # Sanitize input
+        user_message = html.escape(user_message.strip())
+        
+        # Security check for malicious content
+        if contains_malicious_content(user_message):
+            logger.warning("Malicious content detected", extra={'message': user_message[:100], 'remote_addr': request.remote_addr})
+            return jsonify({'error': 'Invalid content detected'}), 400
+        
+        # Load conversation history for context
+        try:
+            with open('conversations.json', 'r') as f:
+                conversation_history = json.load(f)
+        except FileNotFoundError:
+            conversation_history = []
+        except json.JSONDecodeError as e:
+            logger.error("Corrupted conversations file", extra={'error': str(e)})
+            conversation_history = []
+        
+        # Get AI response with context
+        try:
+            bot_response = get_ai_response(user_message, conversation_history)
+        except Exception as e:
+            logger.error("AI response failed", extra={'error': str(e), 'message': user_message[:100]})
+            bot_response = "I'm sorry, I'm having trouble processing your request right now. Please try again in a moment."
+        
+        # Get or create session ID
+        if 'session_id' not in session:
+            session['session_id'] = str(uuid.uuid4())
+        
+        # Save conversation with session tracking
+        try:
+            save_conversation(user_message, bot_response, session['session_id'])
+        except Exception as e:
+            logger.error("Failed to save conversation", extra={'error': str(e)})
+            # Don't fail the request if we can't save the conversation
+        
+        # Log successful chat interaction
+        response_time = time.time() - start_time
+        logger.info(
+            "Chat interaction completed",
+            extra={
+                'request_id': getattr(g, 'request_id', 'unknown'),
+                'session_id': session['session_id'],
+                'message_length': len(user_message),
+                'response_length': len(bot_response),
+                'response_time': response_time
+            }
+        )
+        
+        return jsonify({
+            'response': bot_response,
+            'session_id': session['session_id'],
+            'message_id': str(uuid.uuid4())
+        })
+    
+    except Exception as e:
+        logger.error("Unexpected error in chat endpoint", extra={'error': str(e), 'remote_addr': request.remote_addr})
+        return jsonify({'error': 'An unexpected error occurred. Please try again.'}), 500
     
     # Load conversation history for context
     try:
@@ -612,6 +721,93 @@ def collect_feedback():
         json.dump(training_data, f, indent=2)
     
     return jsonify({'success': True, 'message': 'Feedback collected successfully'})
+
+@app.before_request
+def before_request():
+    """Track request start time and add request ID"""
+    g.start_time = time.time()
+    g.request_id = f"{int(time.time())}-{id(request)}"
+    
+    logger.info(
+        "Request started",
+        extra={
+            'request_id': g.request_id,
+            'method': request.method,
+            'endpoint': request.endpoint,
+            'remote_addr': request.remote_addr,
+            'user_agent': request.headers.get('User-Agent', '')[:100]
+        }
+    )
+
+@app.after_request
+def after_request(response):
+    """Add security headers and log response"""
+    # Security headers
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    
+    # Content Security Policy
+    response.headers['Content-Security-Policy'] = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline'; "
+        "style-src 'self' 'unsafe-inline'; "
+        "img-src 'self' data:; "
+        "connect-src 'self'"
+    )
+    
+    # Log response
+    if hasattr(g, 'start_time'):
+        response_time = time.time() - g.start_time
+        logger.info(
+            "Request completed",
+            extra={
+                'request_id': getattr(g, 'request_id', 'unknown'),
+                'status_code': response.status_code,
+                'response_time': response_time,
+                'content_length': response.content_length
+            }
+        )
+    
+    return response
+
+@app.route('/health')
+def health_check():
+    """Health check endpoint for monitoring"""
+    health_status = {
+        'status': 'healthy',
+        'timestamp': datetime.now().isoformat(),
+        'version': '1.0.0',
+        'checks': {}
+    }
+    
+    # Check knowledge base
+    try:
+        with open('knowledge_base.json', 'r') as f:
+            json.load(f)
+        health_status['checks']['knowledge_base'] = 'healthy'
+    except Exception as e:
+        health_status['checks']['knowledge_base'] = f'unhealthy: {str(e)}'
+        health_status['status'] = 'degraded'
+    
+    # Check AI service
+    if os.getenv('OPENAI_API_KEY'):
+        health_status['checks']['ai_service'] = 'configured'
+    else:
+        health_status['checks']['ai_service'] = 'not_configured'
+    
+    # Check disk space
+    import shutil
+    disk_usage = shutil.disk_usage('.')
+    free_space_gb = disk_usage.free / (1024**3)
+    if free_space_gb < 1:
+        health_status['checks']['disk_space'] = f'low: {free_space_gb:.2f}GB'
+        health_status['status'] = 'degraded'
+    else:
+        health_status['checks']['disk_space'] = f'healthy: {free_space_gb:.2f}GB'
+    
+    status_code = 200 if health_status['status'] == 'healthy' else 503
+    return jsonify(health_status), status_code
 
 @app.route('/admin/analytics')
 def analytics():
