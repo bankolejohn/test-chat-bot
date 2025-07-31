@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  # Development service
+  chatbot-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.development
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+      - chatbot-logs:/app/logs
+      - chatbot-data:/app/data
+    environment:
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+      - SECRET_KEY=dev-secret-key-change-in-production
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Production service
+  chatbot-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    ports:
+      - "8000:8000"
+    volumes:
+      - chatbot-logs:/app/logs
+      - chatbot-data:/app/data
+      - chatbot-backups:/app/backups
+    environment:
+      - FLASK_ENV=production
+      - SECRET_KEY=${SECRET_KEY:-change-this-in-production}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - AI_MODEL=${AI_MODEL:-gpt-4}
+      - MAX_TOKENS=${MAX_TOKENS:-300}
+      - TEMPERATURE=${TEMPERATURE:-0.7}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    profiles:
+      - production
+
+  # Redis for rate limiting (optional)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    profiles:
+      - production
+
+volumes:
+  chatbot-logs:
+  chatbot-data:
+  chatbot-backups:
+  redis-data:
