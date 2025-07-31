@@ -16,12 +16,39 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'your-secret-key-change-in-production')
 
-# Setup rate limiting
-limiter = Limiter(
-    app,
-    key_func=get_remote_address,
-    default_limits=["200 per day", "50 per hour"]
-)
+# Simple rate limiting using in-memory storage (for single instance)
+request_counts = {}
+RATE_LIMIT_WINDOW = 60  # 1 minute
+RATE_LIMIT_MAX = 10     # 10 requests per minute
+
+def simple_rate_limit():
+    """Simple rate limiting implementation"""
+    client_ip = request.remote_addr
+    current_time = time.time()
+    
+    # Clean old entries
+    cutoff_time = current_time - RATE_LIMIT_WINDOW
+    request_counts[client_ip] = [t for t in request_counts.get(client_ip, []) if t > cutoff_time]
+    
+    # Check if rate limit exceeded
+    if len(request_counts.get(client_ip, [])) >= RATE_LIMIT_MAX:
+        return True
+    
+    # Add current request
+    if client_ip not in request_counts:
+        request_counts[client_ip] = []
+    request_counts[client_ip].append(current_time)
+    
+    return False
+
+# Create a dummy limiter for compatibility
+class DummyLimiter:
+    def limit(self, *args, **kwargs):
+        def decorator(f):
+            return f
+        return decorator
+
+limiter = DummyLimiter()
 
 # Setup logging
 logging.basicConfig(
@@ -488,12 +515,16 @@ def index():
     return render_template_string(html)
 
 @app.route('/chat', methods=['POST'])
-@limiter.limit("5 per minute")
 def chat():
     """Handle chat messages with security and monitoring"""
     start_time = time.time()
     
     try:
+        # Simple rate limiting check
+        if simple_rate_limit():
+            logger.warning("Rate limit exceeded", extra={'remote_addr': request.remote_addr})
+            return jsonify({'error': 'Too many requests. Please wait a moment.'}), 429
+        
         data = request.get_json()
         if not data:
             logger.warning("Invalid JSON received", extra={'remote_addr': request.remote_addr})
