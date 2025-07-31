@@ -1,0 +1,67 @@
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies for development
+RUN apt-get update && apt-get install -y \
+    curl \
+    git \
+    vim \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements first for better caching
+COPY requirements.txt .
+
+# Install Python dependencies (including development tools)
+RUN pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir \
+    pytest \
+    pytest-flask \
+    pytest-cov \
+    black \
+    flake8 \
+    ipython \
+    flask-shell-ipython
+
+# Copy application code
+COPY . .
+
+# Create necessary directories and files
+RUN mkdir -p /app/logs /app/backups /app/data && \
+    touch /app/conversations.json && \
+    touch /app/training_data.json
+
+# Set development environment variables
+ENV FLASK_APP=app.py
+ENV FLASK_ENV=development
+ENV FLASK_DEBUG=1
+ENV PYTHONPATH=/app
+ENV PYTHONUNBUFFERED=1
+
+# Expose port (different from production)
+EXPOSE 5000
+
+# Create a development startup script
+RUN echo '#!/bin/bash\n\
+echo "🚀 Starting 3MTT Chatbot in Development Mode"\n\
+echo "==============================================="\n\
+echo "📱 Chat Interface: http://localhost:5000"\n\
+echo "📊 Admin Analytics: http://localhost:5000/admin/analytics"\n\
+echo "🔧 Knowledge Base: http://localhost:5000/admin/knowledge"\n\
+echo "🏥 Health Check: http://localhost:5000/health"\n\
+echo "==============================================="\n\
+echo "💡 Development Features:"\n\
+echo "   - Auto-reload on code changes"\n\
+echo "   - Debug mode enabled"\n\
+echo "   - Detailed error messages"\n\
+echo "   - Development tools available"\n\
+echo "==============================================="\n\
+python app.py' > /app/start-dev.sh && chmod +x /app/start-dev.sh
+
+# Health check for development
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:5000/health || exit 1
+
+# Run Flask development server with auto-reload
+CMD ["/app/start-dev.sh"]
