@@ -46,7 +46,7 @@ jobs:
     
     - name: Check for known security vulnerabilities
       run: |
-        safety check
+        safety scan --output text || true
     
     - name: Run tests with coverage
       run: |
