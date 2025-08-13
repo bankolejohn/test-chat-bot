@@ -29,8 +29,8 @@ def create_app(config_name=None):
     
     # Rate limiting with Redis
     limiter = Limiter(
-        app,
         key_func=get_remote_address,
+        app=app,
         storage_uri=app.config['RATELIMIT_STORAGE_URL']
     )
     

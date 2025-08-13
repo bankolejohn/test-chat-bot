@@ -12,7 +12,7 @@ class Config:
     REDIS_URL = os.environ.get('REDIS_URL') or 'redis://localhost:6379/0'
     
     # Rate Limiting
-    RATELIMIT_STORAGE_URL = os.environ.get('REDIS_URL') or 'redis://localhost:6379/1'
+    RATELIMIT_STORAGE_URL = os.environ.get('REDIS_URL') or 'memory://'
     RATELIMIT_DEFAULT = os.environ.get('RATE_LIMIT_PER_MINUTE', '10 per minute')
     
     # OpenAI Configuration
@@ -43,6 +43,7 @@ class ProductionConfig(Config):
 class TestingConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = 'sqlite:///chatbot_test.db'
+    RATELIMIT_STORAGE_URL = 'memory://'
 
 config = {
     'development': DevelopmentConfig,
