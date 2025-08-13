@@ -1,0 +1,13 @@
+aws_region = "us-east-1"
+
+# Database password (generate a secure password)
+db_password = "your-secure-db-password-here"
+
+# OpenAI API key
+openai_api_key = "your-openai-api-key-here"
+
+# Flask secret key (generate with: python -c "import secrets; print(secrets.token_hex(32))")
+secret_key = "your-flask-secret-key-here"
+
+# Sentry DSN for error tracking (optional)
+sentry_dsn = "your-sentry-dsn-here"
