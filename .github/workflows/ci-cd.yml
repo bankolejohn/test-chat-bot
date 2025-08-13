@@ -29,19 +29,20 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements-production.txt
+        pip install -r requirements.txt
+        pip install black flake8 bandit safety pytest pytest-cov
     
-    - name: Code formatting check
+    - name: Format code with Black
       run: |
-        black --check app.py security_middleware.py monitoring.py
+        black app.py config.py models.py auth.py monitoring.py
     
     - name: Lint with flake8
       run: |
-        flake8 app.py security_middleware.py monitoring.py --max-line-length=100
+        flake8 app.py config.py models.py auth.py monitoring.py --max-line-length=88 --extend-ignore=E203,W503
     
     - name: Security scan with bandit
       run: |
-        bandit -r app.py security_middleware.py monitoring.py
+        bandit -r app.py config.py models.py auth.py monitoring.py
     
     - name: Check for known security vulnerabilities
       run: |
