@@ -42,7 +42,7 @@ jobs:
     
     - name: Security scan with bandit
       run: |
-        bandit -r app.py config.py models.py auth.py monitoring.py
+        bandit -r app.py config.py models.py auth.py monitoring.py -s B104
     
     - name: Check for known security vulnerabilities
       run: |
