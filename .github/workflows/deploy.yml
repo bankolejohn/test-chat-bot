@@ -1,32 +1,113 @@
-name: Deploy to EC2
+name: Deploy to Production
 
 on:
   push:
     branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  deploy:
+  test:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-cov
+    
+    - name: Run tests
+      env:
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+        REDIS_URL: redis://localhost:6379/0
+        FLASK_ENV: testing
+      run: |
+        python -m pytest tests/ -v --cov=app --cov-report=xml
+    
+    - name: Security scan
+      run: |
+        pip install bandit safety
+        bandit -r . -x tests/
+        safety check
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+    
+    - name: Build Docker image
+      run: |
+        docker build -t 3mtt-chatbot:${{ github.sha }} .
+        docker tag 3mtt-chatbot:${{ github.sha }} 3mtt-chatbot:latest
+
+  deploy:
+    needs: [test, build]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v4
     
     - name: Deploy to EC2
-      uses: appleboy/ssh-action@v0.1.5
+      uses: appleboy/ssh-action@v1.0.0
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ubuntu
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
-          cd /home/ubuntu/test-chatbot || git clone https://github.com/${{ github.repository }} /home/ubuntu/test-chatbot
-          cd /home/ubuntu/test-chatbot
+          cd /home/ubuntu/3mtt-chatbot
           git pull origin main
-          sudo apt update
-          sudo apt install -y python3-pip python3-venv
-          python3 -m venv venv
-          source venv/bin/activate
-          pip install -r requirements.txt
-          sudo pkill -f "python3 app.py" || true
-          nohup python3 app.py > app.log 2>&1 &
-          sleep 2
-          echo "Deployment complete"
+          
+          # Update environment
+          cp .env.example .env
+          sed -i "s/your-secret-key-change-in-production/${{ secrets.SECRET_KEY }}/g" .env
+          sed -i "s/your-openai-api-key/${{ secrets.OPENAI_API_KEY }}/g" .env
+          sed -i "s/your-sentry-dsn/${{ secrets.SENTRY_DSN }}/g" .env
+          
+          # Deploy with Docker Compose
+          docker-compose down
+          docker-compose build
+          docker-compose up -d
+          
+          # Run database migrations
+          docker-compose exec -T web flask db upgrade
+          
+          # Health check
+          sleep 30
+          curl -f http://localhost/health || exit 1
+          
+          echo "Deployment successful"
