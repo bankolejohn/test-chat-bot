@@ -1,0 +1,97 @@
+version: '3.8'
+
+services:
+  chatbot-staging:
+    build:
+      context: ../../
+      dockerfile: Dockerfile
+      target: production
+    ports:
+      - "80:8000"
+    environment:
+      - FLASK_ENV=production
+    env_file:
+      - .env.staging
+    depends_on:
+      - redis-staging
+      - postgres-staging
+    networks:
+      - chatbot-staging-network
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  postgres-staging:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: chatbot_staging
+      POSTGRES_USER: chatbot_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_staging_data:/var/lib/postgresql/data
+      - ../../scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - chatbot-staging-network
+    restart: always
+
+  redis-staging:
+    image: redis:7-alpine
+    volumes:
+      - redis_staging_data:/data
+    networks:
+      - chatbot-staging-network
+    restart: always
+
+  nginx-staging:
+    image: nginx:alpine
+    ports:
+      - "443:443"
+    volumes:
+      - ../../nginx/staging.conf:/etc/nginx/conf.d/default.conf
+      - ../../ssl/staging:/etc/ssl/certs
+    depends_on:
+      - chatbot-staging
+    networks:
+      - chatbot-staging-network
+    restart: always
+
+  # Monitoring
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ../../monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - chatbot-staging-network
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=staging_admin_password
+    volumes:
+      - grafana_staging_data:/var/lib/grafana
+    networks:
+      - chatbot-staging-network
+
+volumes:
+  postgres_staging_data:
+  redis_staging_data:
+  grafana_staging_data:
+
+networks:
+  chatbot-staging-network:
+    driver: bridge
