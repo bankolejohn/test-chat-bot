@@ -68,22 +68,12 @@ def create_app(config_name=None):
         
         start_time = time.time()
         try:
-            if not app.config['OPENAI_API_KEY']:
-                response = get_mock_response(message)
+            if app.config['AI_PROVIDER'] == 'openrouter' and app.config['OPENROUTER_API_KEY']:
+                response = get_openrouter_response(message)
+            elif app.config['AI_PROVIDER'] == 'openai' and app.config['OPENAI_API_KEY']:
+                response = get_openai_response(message)
             else:
-                client = openai.OpenAI(api_key=app.config['OPENAI_API_KEY'])
-                messages = [
-                    {"role": "system", "content": "You are a helpful customer support assistant for 3MTT organization. Keep responses concise and professional."},
-                    {"role": "user", "content": message}
-                ]
-                
-                ai_response = client.chat.completions.create(
-                    model=app.config['AI_MODEL'],
-                    messages=messages,
-                    max_tokens=app.config['MAX_TOKENS'],
-                    temperature=app.config['TEMPERATURE']
-                )
-                response = ai_response.choices[0].message.content
+                response = get_mock_response(message)
             
             # Cache successful responses
             cache.set(cache_key, response, timeout=3600)  # 1 hour
@@ -95,6 +85,57 @@ def create_app(config_name=None):
         response_time = time.time() - start_time
         log_chat_interaction(analyze_sentiment(message), response_time)
         return response
+    
+    def get_openrouter_response(message):
+        """Get response from OpenRouter (DeepSeek) API"""
+        import requests
+        
+        response = requests.post(
+            url="https://openrouter.ai/api/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {app.config['OPENROUTER_API_KEY']}",
+                "Content-Type": "application/json",
+                "HTTP-Referer": app.config['SITE_URL'],
+                "X-Title": app.config['SITE_NAME'],
+            },
+            json={
+                "model": app.config['AI_MODEL'],
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": "You are a helpful customer support assistant for 3MTT organization. Keep responses concise and professional."
+                    },
+                    {
+                        "role": "user",
+                        "content": message
+                    }
+                ],
+                "max_tokens": app.config['MAX_TOKENS'],
+                "temperature": app.config['TEMPERATURE']
+            },
+            timeout=30
+        )
+        
+        if response.status_code == 200:
+            return response.json()['choices'][0]['message']['content']
+        else:
+            raise Exception(f"OpenRouter API error: {response.status_code}")
+    
+    def get_openai_response(message):
+        """Get response from OpenAI API"""
+        client = openai.OpenAI(api_key=app.config['OPENAI_API_KEY'])
+        messages = [
+            {"role": "system", "content": "You are a helpful customer support assistant for 3MTT organization. Keep responses concise and professional."},
+            {"role": "user", "content": message}
+        ]
+        
+        ai_response = client.chat.completions.create(
+            model=app.config['AI_MODEL'] if app.config['AI_MODEL'].startswith('gpt') else 'gpt-4',
+            messages=messages,
+            max_tokens=app.config['MAX_TOKENS'],
+            temperature=app.config['TEMPERATURE']
+        )
+        return ai_response.choices[0].message.content
     
     def get_mock_response(message):
         """Get mock response based on keywords"""

@@ -1,8 +1,13 @@
-# AWS Elastic Beanstalk expects 'application' variable
-from app import app
+#!/usr/bin/env python3
+"""
+AWS Elastic Beanstalk entry point for 3MTT Chatbot
+"""
 
-# Elastic Beanstalk looks for 'application' callable
-application = app
+import os
+from app import create_app
+
+# Create Flask application
+application = create_app('production')
 
 if __name__ == "__main__":
-    application.run()
+    application.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))

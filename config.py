@@ -15,11 +15,15 @@ class Config:
     RATELIMIT_STORAGE_URL = os.environ.get('REDIS_URL') or 'memory://'
     RATELIMIT_DEFAULT = os.environ.get('RATE_LIMIT_PER_MINUTE', '10 per minute')
     
-    # OpenAI Configuration
+    # AI Configuration
     OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
-    AI_MODEL = os.environ.get('AI_MODEL', 'gpt-4')
+    OPENROUTER_API_KEY = os.environ.get('OPENROUTER_API_KEY')
+    AI_MODEL = os.environ.get('AI_MODEL', 'deepseek/deepseek-r1:free')
+    AI_PROVIDER = os.environ.get('AI_PROVIDER', 'openrouter')  # 'openai' or 'openrouter'
     MAX_TOKENS = int(os.environ.get('MAX_TOKENS', '300'))
     TEMPERATURE = float(os.environ.get('TEMPERATURE', '0.7'))
+    SITE_URL = os.environ.get('SITE_URL', 'https://3mtt-chatbot.com')
+    SITE_NAME = os.environ.get('SITE_NAME', '3MTT Chatbot')
     
     # Security
     JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY') or SECRET_KEY

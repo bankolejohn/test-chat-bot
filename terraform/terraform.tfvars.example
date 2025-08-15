@@ -3,8 +3,13 @@ aws_region = "us-east-1"
 # Database password (generate a secure password)
 db_password = "your-secure-db-password-here"
 
-# OpenAI API key
+# AI API keys
 openai_api_key = "your-openai-api-key-here"
+openrouter_api_key = "your-openrouter-api-key-here"
+
+# AI Configuration
+ai_provider = "openrouter"  # "openai" or "openrouter"
+ai_model = "deepseek/deepseek-r1:free"
 
 # Flask secret key (generate with: python -c "import secrets; print(secrets.token_hex(32))")
 secret_key = "your-flask-secret-key-here"
