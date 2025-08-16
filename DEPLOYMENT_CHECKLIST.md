@@ -53,7 +53,7 @@ Upload these essential files to your repository:
    VALUE: your-random-secret-key-123456789
    
    KEY: OPENAI_API_KEY  
-   VALUE: sk-your-openai-key-here (optional)
+   VALUE: your-openai-key-here (optional)
    ```
 
 ## ✅ Step 7: Deploy

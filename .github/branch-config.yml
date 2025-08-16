@@ -1,0 +1,50 @@
+# Branch Configuration for 3MTT Chatbot
+# This file defines the behavior for each branch
+
+branches:
+  main:
+    environment: production
+    protection_level: maximum
+    deployment: manual_approval
+    auto_merge: false
+    required_reviews: 2
+    required_checks:
+      - ci
+      - security-scan
+      - integration-tests
+      - performance-tests
+    
+  develop:
+    environment: staging
+    protection_level: high
+    deployment: automatic
+    auto_merge: false
+    required_reviews: 1
+    required_checks:
+      - ci
+      - integration-tests
+    
+  feature:
+    environment: development
+    protection_level: low
+    deployment: automatic
+    auto_merge: false
+    required_reviews: 0
+    required_checks:
+      - ci
+
+deployment_environments:
+  production:
+    url: https://chatbot.3mtt.gov.ng
+    health_check: /health
+    rollback_enabled: true
+    
+  staging:
+    url: https://staging.3mtt-chatbot.com
+    health_check: /health
+    rollback_enabled: true
+    
+  development:
+    url: http://localhost:5000
+    health_check: /health
+    rollback_enabled: false

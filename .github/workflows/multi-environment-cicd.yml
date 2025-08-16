@@ -2,11 +2,12 @@ name: 3MTT Chatbot Multi-Environment CI/CD
 
 on:
   push:
-    branches: [ main, develop, feature/* ]
+    branches: [ main, develop, 'feature/**' ]
   pull_request:
     branches: [ main, develop ]
   release:
     types: [ published ]
+  workflow_dispatch:  # Allow manual triggers
 
 env:
   REGISTRY: ghcr.io

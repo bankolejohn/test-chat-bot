@@ -157,7 +157,7 @@ AI_MODEL=gpt-3.5-turbo  # Cheaper alternative to GPT-4
 ### Option 1: With OpenAI API (Full AI Power)
 ```bash
 # In your .env file:
-OPENAI_API_KEY=sk-your-actual-openai-key-here
+OPENAI_API_KEY=your-actual-openai-key-here
 SECRET_KEY=your-secret-key
 AI_MODEL=gpt-4
 MAX_TOKENS=300
@@ -192,10 +192,10 @@ SECRET_KEY=your-secret-key
 ### ✅ Secure API Key Storage:
 ```bash
 # NEVER do this (exposed in code):
-OPENAI_API_KEY = "sk-1234567890"
+OPENAI_API_KEY = "your-openai-key"
 
 # ALWAYS do this (in .env file):
-echo "OPENAI_API_KEY=sk-your-key-here" >> .env
+echo "OPENAI_API_KEY=your-key-here" >> .env
 chmod 600 .env
 ```
 

@@ -6,7 +6,7 @@
 ```bash
 # NEVER put secrets directly in scripts
 export SECRET_KEY="my-secret-key"
-export OPENAI_API_KEY="sk-1234567890"
+export OPENAI_API_KEY="your-openai-key"
 ```
 
 ### ✅ What TO do:

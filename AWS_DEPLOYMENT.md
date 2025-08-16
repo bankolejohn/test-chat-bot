@@ -119,7 +119,7 @@ Create `terraform/terraform.tfvars`:
 ```hcl
 aws_region = "us-east-1"
 db_password = "SuperSecurePassword123!"
-openai_api_key = "sk-your-openai-key"
+openai_api_key = "your-openai-key"
 secret_key = "your-32-char-secret-key"
 sentry_dsn = "https://your-sentry-dsn"
 ```

@@ -215,7 +215,7 @@ nano .env
 
 # Add:
 SECRET_KEY=your-dev-secret-key
-OPENAI_API_KEY=sk-your-dev-openai-key
+OPENAI_API_KEY=your-dev-openai-key
 ```
 
 ### **Staging/Production Secrets**

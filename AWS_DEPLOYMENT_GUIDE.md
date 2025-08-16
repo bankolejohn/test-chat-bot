@@ -183,7 +183,7 @@
 Set these in your AWS service:
 ```
 SECRET_KEY=your-random-secret-key-123456789
-OPENAI_API_KEY=sk-your-openai-key-here (optional)
+OPENAI_API_KEY=your-openai-key-here (optional)
 ```
 
 ---

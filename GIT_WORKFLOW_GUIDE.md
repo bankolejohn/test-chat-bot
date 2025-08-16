@@ -300,7 +300,7 @@ git push origin feature/update-knowledge-base
 # Different configs for different environments
 
 # Development (local)
-echo "OPENAI_API_KEY=sk-dev-key" > .env
+echo "OPENAI_API_KEY=your-dev-key" > .env
 echo "LOG_LEVEL=DEBUG" >> .env
 
 # Staging (managed by CI/CD)
@@ -324,7 +324,7 @@ nano .env
 
 # Add your development keys
 SECRET_KEY=dev-secret-key-123
-OPENAI_API_KEY=sk-your-dev-key-here
+OPENAI_API_KEY=your-dev-key-here
 ```
 
 ### **Staging**
@@ -332,7 +332,7 @@ OPENAI_API_KEY=sk-your-dev-key-here
 # Managed by deployment scripts
 # Secrets stored in CI/CD environment variables
 export STAGING_SECRET_KEY="staging-secure-key"
-export STAGING_OPENAI_KEY="sk-staging-key"
+export STAGING_OPENAI_KEY="your-staging-key"
 ```
 
 ### **Production**
@@ -344,7 +344,7 @@ aws secretsmanager create-secret \
 
 aws secretsmanager create-secret \
   --name "prod/chatbot/openai-key" \
-  --secret-string "sk-production-openai-key"
+  --secret-string "your-production-openai-key"
 ```
 
 ---

@@ -52,7 +52,7 @@ SECRET_KEY=$SECRET_KEY
 FLASK_ENV=production
 
 # OpenAI Configuration (optional - add your key here)
-# OPENAI_API_KEY=sk-your-openai-key-here
+# OPENAI_API_KEY=your-openai-key-here
 
 # Application Settings
 AI_MODEL=gpt-4
